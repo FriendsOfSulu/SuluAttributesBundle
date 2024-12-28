@@ -10,7 +10,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "FriendsOfSulu\\Bundle\\SuluAttributesBundle\\": ""
+      "FriendsOfSulu\\Bundle\\SuluAttributesBundle\\": "./"
     }
   },
   "authors": [
