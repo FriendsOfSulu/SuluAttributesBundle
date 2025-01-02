@@ -1,7 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace FriendsOfSulu\Bundle\SuluAttributesBundle\DependencyInjection;
+
 use Sulu\Bundle\PersistenceBundle\DependencyInjection\PersistenceExtensionTrait;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -29,7 +31,7 @@ class SuluAttributesExtension extends Extension implements PrependExtensionInter
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/'));
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources'));
         $loader->load('services.yml');
     }
 }
