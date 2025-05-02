@@ -1,13 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes;
 
-use Attribute;
-
-#[Attribute(Attribute::TARGET_METHOD)]
+#[\Attribute(\Attribute::TARGET_METHOD)]
 class SuluResourceRoute
 {
-    /** @var 'detail'|'list' $type */
+    /** @var 'detail'|'list' */
     public function __construct(
         public readonly string $type,
         public readonly string $resourceKey,
