@@ -8,4 +8,24 @@ composer require friendsofsulu/sulu-attributes-bundle
 
 ## 🧐 Features
 He're some of the project's features:
-* TBA
+
+### `#[SuluResourceRoutes]` for configuring routes on the admin class
+
+Before
+```yaml
+    resources:
+        events:
+            routes:
+                list: app.get_event_list
+                detail: app.get_event
+```
+
+After
+```php
+<?php
+#[SuluResourcesRoutes([
+    'list' => 'app.get_event_list',
+    'details' => 'app.get_event'
+])]
+class EventAdmin {}
+```
