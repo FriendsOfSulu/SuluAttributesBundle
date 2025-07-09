@@ -17,7 +17,11 @@ class SuluNavigationItem
      * @param int|null $position
      *                           Ordering of the element with their siblings (null means at the end)
      * @param array{string, string}|null|false $permission
-     *                                                     Only show the menu item when the user has the following permission. (by default: [self::SECURITY_CONTEXT, PermissionTypes::EDIT]
+     *                                                     Only show the menu item when the user has the following permission.
+     *                                                     * null = use the default
+     *                                                     * false = any user can see the menu item
+     *                                                     * any array will be passed to the Sulu security checker
+     *                                                     (by default: [self::SECURITY_CONTEXT, PermissionTypes::EDIT]
      * @param string|null $parentName
      *                                Name of the parent navigation item (null means main menu)
      */
