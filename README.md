@@ -23,9 +23,12 @@ Before
 After
 ```php
 <?php
-#[SuluResourcesRoutes([
-    'list' => 'app.get_event_list',
-    'details' => 'app.get_event'
-])]
+#[SuluResourcesRoutes(
+    'events',
+    [
+        'list' => 'app.get_event_list',
+        'details' => 'app.get_event'
+    ]
+)]
 class EventAdmin {}
 ```
