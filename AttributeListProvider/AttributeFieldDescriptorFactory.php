@@ -9,7 +9,6 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration\Count
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration\JoinMetadata;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration\SinglePropertyMetadata;
 use Sulu\Bundle\SecurityBundle\Entity\User;
-use Sulu\Bundle\SnippetBundle\Document\SnippetDocument;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineCountFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
@@ -17,6 +16,8 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescrip
 use Sulu\Component\Rest\ListBuilder\Metadata\ConcatenationPropertyMetadata;
 use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
+use Sulu\Snippet\Domain\Model\SnippetInterface;
+use Sulu\Bundle\ContactBundle\Entity\Contact;
 
 final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorFactoryInterface, CacheWarmerInterface
 {
@@ -48,15 +49,19 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
                 $attributeInstance = $attribute->newInstance();
 
                 if ($attributeInstance instanceof SinglePropertyMetadata) {
-                    $fields[$property->getName()] = $this->getSinglePropertyMetadata($property, $attributeInstance);
+                    $fields[$attributeInstance->name ?? $property->getName()] = $this->getSinglePropertyMetadata($property, $attributeInstance);
                 }
                 if ($attributeInstance instanceof ConcatPropertyMetadata) {
-                    $fields[$property->getName()] = $this->getConcatenationPropertyMetadata($property, $attributeInstance);
+                    $fields[$attributeInstance->name ?? $property->getName()] = $this->getConcatenationPropertyMetadata($property, $attributeInstance, $joins);
                 }
                 if ($attributeInstance instanceof CountPropertyMetadata) {
-                    $fields[$property->getName()] = $this->getCountFieldDescriptor($property, $attributeInstance);
+                    $fields[$attributeInstance->name ?? $property->getName()] = $this->getCountFieldDescriptor($property, $attributeInstance);
                 }
             }
+        }
+
+        if ([] === $fields) {
+            throw new \InvalidArgumentException('No class-based mapping found for entity: '. $listKey);
         }
 
         return $fields;
@@ -93,22 +98,25 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
         return $fieldDescriptor;
     }
 
+    /**
+     * @param array<DoctrineJoinDescriptor> $joins
+     */
     private function getConcatenationPropertyMetadata(
         \ReflectionProperty $property,
-        ConcatPropertyMetadata $attribute
+        ConcatPropertyMetadata $attribute,
+        array $joins,
     ): DoctrineConcatenationFieldDescriptor {
         $fieldDescriptor = new DoctrineConcatenationFieldDescriptor(
-            [
+            array_map(fn (array $entry) : DoctrineFieldDescriptor =>
                 new DoctrineFieldDescriptor(
-                    'username',
+                    $entry[0],
                     $property->getName(),
-                    User::class,
+                    $entry[1],
                     '',
-                    [
-                        User::class => new DoctrineJoinDescriptor(User::class, SnippetDocument::class . '.' . $property->getName()),
-                    ],
+                    $joins,
                 ),
-            ],
+                $attribute->fields
+            ),
             $property->getName(),
             $attribute->title ?? ('sulu_admin.' . $property->getName()),
             $attribute->glue,
@@ -116,7 +124,7 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
             $attribute->searchability,
             'string',
             $attribute->sortable,
-            $attribute->width
+            $attribute->width,
         );
         $fieldDescriptor->setMetadata(new ConcatenationPropertyMetadata($property->getName()));
 
@@ -156,20 +164,20 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
         $joins = [];
         foreach ($reflection->getProperties() as $property) {
             $attributes = $property->getAttributes(JoinMetadata::class);
-            if ([] === $attributes) {
-                continue;
-            }
-            /** @var JoinMetadata $attributeInstance */
-            $attributeInstance = $attributes[0]->newInstance();
 
-            $property = new DoctrineJoinDescriptor(
-                $attributeInstance->entityClass ?? ((string) $property->getType()),
-                $attributeInstance->name,
-                $attributeInstance->joinCondition,
-                $attributeInstance->joinMethod,
-                $attributeInstance->joinConditionMethod,
-            );
-            $joins[] = $property;
+            foreach ($attributes as $i => $join) {
+                /** @var JoinMetadata $attributeInstance */
+                $attributeInstance = $join->newInstance();
+
+                $joinDescriptor = new DoctrineJoinDescriptor(
+                    $attributeInstance->joinAlias,
+                    $attributeInstance->join,
+                    $attributeInstance->joinCondition,
+                    $attributeInstance->joinMethod,
+                    $attributeInstance->joinConditionMethod,
+                );
+                $joins[$attributeInstance->joinAlias] = $joinDescriptor;
+            }
         }
 
         return $joins;
@@ -178,7 +186,7 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
     private function guessFieldTypeFromTypeInfo(?\ReflectionType $type, string $propertyName): string
     {
         return match ((string) $type) {
-            'string' => 'text',
+            'string' => 'string',
             'int' | 'float' => 'number',
             \DateTimeInterface::class, \DateTimeImmutable::class => 'datetime',
             default => throw new \InvalidArgumentException('Please specify the type for "' . $propertyName . '". Current type: ' . $type),
