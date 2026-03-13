@@ -7,7 +7,7 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes;
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class SuluResourceRoute
 {
-    /** @var 'detail'|'list' */
+    /** @param 'detail'|'list' $type */
     public function __construct(
         public readonly string $type,
         public readonly string $resourceKey,

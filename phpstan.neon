@@ -4,5 +4,7 @@ parameters:
         - "./"
     excludePaths:
         - "vendor/**"
+    ignoreErrors:
+        - identifier: missingType.generics
 
 

@@ -42,7 +42,8 @@ Before
 use Sulu\Bundle\AdminBundle\Admin\Navigation\NavigationItem;
 use Sulu\Bundle\AdminBundle\Admin\Navigation\NavigationItemCollection;
 
-class EventAdmin {
+class ActivityAdmin extends Admin 
+{
     public function configureNavigationItems(NavigationItemCollection $navigationItemCollection): void
     {
         if ($this->securityChecker->hasPermission(static::SECURITY_CONTEXT, PermissionTypes::VIEW)) {
@@ -53,6 +54,8 @@ class EventAdmin {
             $navigationItemCollection->get(Admin::SETTINGS_NAVIGATION_ITEM)->addChild($activitiesNavigationItem);
         }
     }
+
+    // ...
 }
 ```
 
@@ -65,10 +68,11 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\SuluNavigationItem;
 #[SuluNavigationItem(
     title: 'sulu_activity.activities',
     position: 100,
-    view: static::LIST_VIEW,
-    permission: [static::SECURITY_CONTEXT, PermissionTypes::VIEW],
+    view: self::LIST_VIEW,
+    permission: [self::SECURITY_CONTEXT, PermissionTypes::VIEW],
     parentName: Admin::SETTINGS_NAVIGATION_ITEM,
 )]
-class EventAdmin {
+class ActivityAdmin extends Admin
+{
 }
 ```

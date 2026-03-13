@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes;
 
-#[\Attribute(\Attribute::TARGET_CLASS)]
+#[\Attribute(\Attribute::TARGET_CLASS + \Attribute::IS_REPEATABLE)]
 class SuluNavigationItem
 {
     /**
@@ -28,7 +28,7 @@ class SuluNavigationItem
     public function __construct(
         public readonly string $title,
         public readonly string $view,
-        public readonly ?string $icon,
+        public readonly ?string $icon = null,
         public readonly ?int $position = null,
         public readonly array|false|null $permission = null,
         public readonly ?string $parentName = null,
