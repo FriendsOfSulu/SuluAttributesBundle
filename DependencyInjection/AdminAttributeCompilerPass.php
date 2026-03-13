@@ -75,6 +75,10 @@ class AdminAttributeCompilerPass implements CompilerPassInterface
             $className = $container->getParameter(\trim($className, '%'));
         }
 
+        if (!\is_string($className) || !\class_exists($className)) {
+            return null;
+        }
+
         return new \ReflectionClass($className);
     }
 }
