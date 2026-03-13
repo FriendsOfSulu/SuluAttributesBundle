@@ -7,8 +7,8 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle\AttributeListProvider;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration\ConcatPropertyMetadata;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration\CountPropertyMetadata;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration\JoinMetadata;
+use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration\OtherMetadata;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration\SinglePropertyMetadata;
-use Sulu\Bundle\SecurityBundle\Entity\User;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineCountFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
@@ -16,8 +16,6 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescrip
 use Sulu\Component\Rest\ListBuilder\Metadata\ConcatenationPropertyMetadata;
 use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
-use Sulu\Snippet\Domain\Model\SnippetInterface;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
 
 final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorFactoryInterface, CacheWarmerInterface
 {
@@ -41,11 +39,12 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
             $attributes = $property->getAttributes(SinglePropertyMetadata::class);
             $concatAttributes = $property->getAttributes(ConcatPropertyMetadata::class);
             $countAttributes = $property->getAttributes(CountPropertyMetadata::class);
-            if ([] === $attributes && [] === $concatAttributes && [] === $countAttributes) {
+            $otherAttributes = $property->getAttributes(OtherMetadata::class);
+            if ([] === $attributes && [] === $concatAttributes && [] === $countAttributes && [] === $otherAttributes) {
                 continue;
             }
 
-            foreach (\array_merge($attributes, $concatAttributes, $countAttributes) as $attribute) {
+            foreach (\array_merge($attributes, $concatAttributes, $countAttributes, $otherAttributes) as $attribute) {
                 $attributeInstance = $attribute->newInstance();
 
                 if ($attributeInstance instanceof SinglePropertyMetadata) {
@@ -56,6 +55,9 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
                 }
                 if ($attributeInstance instanceof CountPropertyMetadata) {
                     $fields[$attributeInstance->name ?? $property->getName()] = $this->getCountFieldDescriptor($property, $attributeInstance);
+                }
+                if ($attributeInstance instanceof OtherMetadata) {
+                    $fields = [...$fields, ...$this->getOtherFieldDescriptors($attributeInstance)];
                 }
             }
         }
@@ -71,13 +73,13 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
         \ReflectionProperty $property,
         SinglePropertyMetadata $attribute
     ): DoctrineFieldDescriptor {
-        $propertyName = $property->getName();
+        $propertyName = $attribute->name ?? $property->getName();
         $type = $attribute->type ?? $this->guessFieldTypeFromTypeInfo($property->getType(), $propertyName);
 
         $fieldDescriptor = new DoctrineFieldDescriptor(
+            $attribute->fieldName ?? $property->getName(),
             $propertyName,
-            $attribute->name ?? $propertyName,
-            $property->getDeclaringClass()->getName(),
+            $attribute->entityAlias ?? $property->getDeclaringClass()->getName(),
             $attribute->title ?? ('sulu_admin.' . $property->getName()),
             [],
             $attribute->visibility,
@@ -154,6 +156,23 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
         return $fieldDescriptor;
     }
 
+    private function getOtherFieldDescriptors(OtherMetadata $attribute): array {
+        $fields = [];
+        $reflection = new \ReflectionClass($attribute->otherClassName);
+
+        foreach ($reflection->getProperties() as $property) {
+            $attributes = $property->getAttributes(SinglePropertyMetadata::class);
+            $attributeInstance = ($attributes[0] ?? null)?->newInstance();
+
+            if ($attributeInstance instanceof SinglePropertyMetadata) {
+                $attributeInstance->entityAlias = $attribute->entityAlias;
+                $fields[$attributeInstance->name ?? $property->getName()] = $this->getSinglePropertyMetadata($property, $attributeInstance);
+            }
+        }
+
+        return $fields;
+    }
+
     /**
      * @param \ReflectionClass<object> $reflection
      *
@@ -171,7 +190,7 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
 
                 $joinDescriptor = new DoctrineJoinDescriptor(
                     $attributeInstance->joinAlias,
-                    $attributeInstance->join,
+                    str_replace('(this)', $reflection->name, $attributeInstance->join),
                     $attributeInstance->joinCondition,
                     $attributeInstance->joinMethod,
                     $attributeInstance->joinConditionMethod,
@@ -185,7 +204,7 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
 
     private function guessFieldTypeFromTypeInfo(?\ReflectionType $type, string $propertyName): string
     {
-        return match ((string) $type) {
+        return match (ltrim((string) $type, '?')) {
             'string' => 'string',
             'int' | 'float' => 'number',
             \DateTimeInterface::class, \DateTimeImmutable::class => 'datetime',

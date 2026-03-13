@@ -6,11 +6,13 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration
 
 use Sulu\Component\Rest\ListBuilder\FieldDescriptorInterface;
 
-#[\Attribute(\Attribute::TARGET_PROPERTY)]
-readonly class SinglePropertyMetadata
+#[\Attribute(\Attribute::TARGET_PROPERTY + \Attribute::IS_REPEATABLE)]
+class SinglePropertyMetadata
 {
     public function __construct(
         public ?string $name = null,
+        public ?string $fieldName = null,
+        public ?string $entityAlias = null,
         public string $visibility = FieldDescriptorInterface::VISIBILITY_YES,
         public string $searchability = FieldDescriptorInterface::SEARCHABILITY_YES,
         public bool $sortable = true,
