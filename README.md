@@ -32,3 +32,43 @@ After
 )]
 class EventAdmin {}
 ```
+
+### `#[SuluNavigationItem]` for configuring navigation items
+
+Before
+```php
+<?php
+
+use Sulu\Bundle\AdminBundle\Admin\Navigation\NavigationItem;
+use Sulu\Bundle\AdminBundle\Admin\Navigation\NavigationItemCollection;
+
+class EventAdmin {
+    public function configureNavigationItems(NavigationItemCollection $navigationItemCollection): void
+    {
+        if ($this->securityChecker->hasPermission(static::SECURITY_CONTEXT, PermissionTypes::VIEW)) {
+            $activitiesNavigationItem = new NavigationItem('sulu_activity.activities');
+            $activitiesNavigationItem->setPosition(100);
+            $activitiesNavigationItem->setView(static::LIST_VIEW);
+
+            $navigationItemCollection->get(Admin::SETTINGS_NAVIGATION_ITEM)->addChild($activitiesNavigationItem);
+        }
+    }
+}
+```
+
+After
+```php
+<?php
+
+use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\SuluNavigationItem;
+
+#[SuluNavigationItem(
+    title: 'sulu_activity.activities',
+    position: 100,
+    view: static::LIST_VIEW,
+    permission: [static::SECURITY_CONTEXT, PermissionTypes::VIEW],
+    parentName: Admin::SETTINGS_NAVIGATION_ITEM,
+)]
+class EventAdmin {
+}
+```
