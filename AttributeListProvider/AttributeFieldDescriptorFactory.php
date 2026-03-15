@@ -188,8 +188,8 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
                 $attributeInstance = $join->newInstance();
 
                 $joinDescriptor = new DoctrineJoinDescriptor(
-                    join('.', self::parseJoinExpression($attributeInstance->joinExpression, $property)),
                     $attributeInstance->joinAlias,
+                    join('.', self::parseJoinExpression($attributeInstance->joinExpression, $property)),
                     $attributeInstance->joinCondition,
                     $attributeInstance->joinMethod,
                     $attributeInstance->joinConditionMethod,
