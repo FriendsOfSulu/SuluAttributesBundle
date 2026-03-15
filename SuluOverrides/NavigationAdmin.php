@@ -21,10 +21,17 @@ use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 
 class NavigationAdmin extends Admin
 {
+    private AdminPool $adminPool;
+
     public function __construct(
         private readonly SecurityCheckerInterface $securityChecker,
-        private readonly AdminPool $adminPool
     ) {
+    }
+
+    // We have to have an indirection here, because otherwise there would be a circular dependency in the consturctor
+    public function setAdminPool(AdminPool $adminPool): void
+    {
+        $this->adminPool = $adminPool;
     }
 
     public function configureNavigationItems(NavigationItemCollection $navigationItemCollection): void

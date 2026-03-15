@@ -28,9 +28,9 @@ class SuluAttributesBundle extends AbstractBundle
         $services->set(NavigationAdmin::class)
             ->args([
                 new Reference('sulu_security.security_checker'),
-                new Reference('sulu_admin.admin_pool'),
             ])
             ->tag('sulu.admin')
+            ->call('setAdminPool', [new Reference('sulu_admin.admin_pool')])
         ;
     }
 }
