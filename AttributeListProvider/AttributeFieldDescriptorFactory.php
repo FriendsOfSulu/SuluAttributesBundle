@@ -108,17 +108,13 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
         ConcatPropertyMetadata $attribute,
         array $joins,
     ): DoctrineConcatenationFieldDescriptor {
+        $fieldsToConcat = array_map(
+            fn (string $fieldExpression) => self::parseFieldDescriptorFromExpression($fieldExpression, $property, $joins),
+            $attribute->fields
+        );
+
         $fieldDescriptor = new DoctrineConcatenationFieldDescriptor(
-            array_map(fn (array $entry) : DoctrineFieldDescriptor =>
-                new DoctrineFieldDescriptor(
-                    $entry[0],
-                    $property->getName(),
-                    $entry[1],
-                    '',
-                    $joins,
-                ),
-                $attribute->fields
-            ),
+            $fieldsToConcat,
             $property->getName(),
             $attribute->title ?? ('sulu_admin.' . $property->getName()),
             $attribute->glue,
@@ -156,6 +152,9 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
         return $fieldDescriptor;
     }
 
+    /**
+ * @return array<string, DoctrineFieldDescriptor>
+ */
     private function getOtherFieldDescriptors(OtherMetadata $attribute): array {
         $fields = [];
         $reflection = new \ReflectionClass($attribute->otherClassName);
@@ -189,8 +188,8 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
                 $attributeInstance = $join->newInstance();
 
                 $joinDescriptor = new DoctrineJoinDescriptor(
+                    join('.', self::parseJoinExpression($attributeInstance->joinExpression, $property)),
                     $attributeInstance->joinAlias,
-                    str_replace('(this)', $reflection->name, $attributeInstance->join),
                     $attributeInstance->joinCondition,
                     $attributeInstance->joinMethod,
                     $attributeInstance->joinConditionMethod,
@@ -200,6 +199,42 @@ final readonly class AttributeFieldDescriptorFactory implements FieldDescriptorF
         }
 
         return $joins;
+    }
+
+    /**
+    * @param array<DoctrineJoinDescriptor> $joins
+    */
+    private static function parseFieldDescriptorFromExpression(
+        string $expression,
+        \ReflectionProperty $property,
+        array $joins,
+    ): DoctrineFieldDescriptor {
+        [$entityAlias, $fieldName] = self::parseJoinExpression($expression, $property);
+
+        return new DoctrineFieldDescriptor(
+            $fieldName,
+            $property->getName(),
+            $entityAlias,
+            '',
+            $joins,
+        );
+    }
+
+    /**
+    * @return array<string>
+    */
+    private static function parseJoinExpression(string $expression, \ReflectionProperty $property): array {
+        return match (substr_count($expression, '.')) {
+            // No points means current entity and the expression is the field name
+            0 => [$property->getDeclaringClass()->getName(), $expression],
+            // One dot means, foreign entity + expression (user.username)
+            1 => explode('.', $expression),
+            // More dots are not supported
+            default => throw new \InvalidArgumentException(sprintf(
+                'Expression "%s" is too complex. Please only specify at most one relation like: user.username',
+                $expression
+            )),
+        };
     }
 
     private function guessFieldTypeFromTypeInfo(?\ReflectionType $type, string $propertyName): string

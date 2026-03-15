@@ -7,6 +7,9 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\ListConfiguration
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 readonly class OtherMetadata
 {
+    /**
+    * @param class-string $otherClassName
+    */
     public function __construct(
         public string $otherClassName,
         public string $entityAlias,

@@ -11,6 +11,7 @@ class ConcatPropertyMetadata
 {
     /**
      * @param array<string> $fields
+     * It only supports simple expressions like: user.test or creator (assuming you mean the current entity)
      */
     public function __construct(
         public readonly string $visibility=FieldDescriptorInterface::VISIBILITY_YES,
