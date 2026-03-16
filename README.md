@@ -76,3 +76,35 @@ class ActivityAdmin extends Admin
 {
 }
 ```
+
+### `#[SuluSingleSelection]` and `#[SuluMultiSelection]` for configuring selection overlays
+
+You can tag the PropertyResolver with a `#[SuluSingleSelection]` or `#[SuluMultiSelection]` and provide a configuration
+for those overlays.
+
+```php
+<?php
+
+#[\FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\SuluSingleSelection(
+    'single_account_selection',
+    [
+        'default_type' => 'auto_complete',
+        'resource_key' => 'accounts',
+        'types' => [
+            'auto_complete' => [
+                'display_property' => 'name',
+                'search_properties' => ['number', 'name'],
+            ],
+            'list_overlay' => [
+                'adapter' => 'table',
+                'list_key' => 'accounts',
+                'display_properties' => ['name'],
+                'empty_text' => 'sulu_contact.no_account_selected',
+                'icon' => 'su-house',
+                'overlay_title' => 'sulu_contact.single_account_selection_overlay_title',
+            ],
+        ],
+    ]
+)]
+class SingleContactSelectionPropertyResolver implements PropertyResolverInterface {}
+```
