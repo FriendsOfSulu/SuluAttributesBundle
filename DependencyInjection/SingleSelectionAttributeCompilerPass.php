@@ -19,18 +19,35 @@ class SingleSelectionAttributeCompilerPass implements CompilerPassInterface
             $class = $container->getDefinition($service)->getClass();
 
             foreach ((new \ReflectionClass($class))->getAttributes(SuluSingleSelection::class) as $attribute) {
-                $attributeInstance = $attribute->newInstance();
-                $config['single_selection'][$attributeInstance->name] = $attributeInstance->config;
+                $config['single_selection'] = $this->configureAttribute($attribute->newInstance());
             }
 
             foreach ((new \ReflectionClass($class))->getAttributes(SuluMultiSelection::class) as $attribute) {
-                $attributeInstance = $attribute->newInstance();
-                $config['selection'][$attributeInstance->name] = $attributeInstance->config;
+                $config['selection'] = $this->configureAttribute($attribute->newInstance());
             }
         }
 
         $container->prependExtensionConfig('sulu_admin', [
             'field_type_options' => $config,
         ]);
+    }
+
+    /**
+    * @return array<string, mixed>
+    */
+    private function configureAttribute(SuluSingleSelection|SuluMultiSelection $attribute): array
+    {
+        $config = [
+            $attribute->name => [
+                'default_type' => $attribute->defaultType,
+                'resource_key' => $attribute->resourceKey,
+                'types' => $attribute->types
+            ]
+        ];
+        if ($attribute->views !== null) {
+            $config[$attribute->name]['view'] = $attribute->views;
+        }
+
+        return $config;
     }
 }

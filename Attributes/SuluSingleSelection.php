@@ -8,11 +8,15 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes;
 readonly class SuluSingleSelection
 {
     /**
-     * @param array<string, mixed> $config
+     * @param array<string, mixed> $types
+     * @param ?array<string, mixed> $views
      */
     public function __construct(
         public string $name,
-        public array $config
+        public string $defaultType,
+        public string $resourceKey,
+        public array $types,
+        public ?array $views = null,
     ) {
     }
 }
