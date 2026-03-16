@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace FriendsOfSulu\Bundle\SuluAttributesBundle\DependencyInjection;
 
-use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\SuluSingleSelection;
-use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\SuluMultiSelection;
+use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\Selection\SuluMultiSelection;
+use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\Selection\SuluSingleSelection;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -33,18 +33,18 @@ class SingleSelectionAttributeCompilerPass implements CompilerPassInterface
     }
 
     /**
-    * @return array<string, mixed>
-    */
+     * @return array<string, mixed>
+     */
     private function configureAttribute(SuluSingleSelection|SuluMultiSelection $attribute): array
     {
         $config = [
             $attribute->name => [
                 'default_type' => $attribute->defaultType,
                 'resource_key' => $attribute->resourceKey,
-                'types' => $attribute->types
-            ]
+                'types' => $attribute->getTypes(),
+            ],
         ];
-        if ($attribute->views !== null) {
+        if (($attribute->views ?? null) !== null) {
             $config[$attribute->name]['view'] = $attribute->views;
         }
 
