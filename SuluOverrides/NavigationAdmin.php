@@ -13,7 +13,6 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle\SuluOverrides;
 
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\SuluNavigationItem;
 use Sulu\Bundle\AdminBundle\Admin\Admin;
-use Sulu\Bundle\AdminBundle\Admin\AdminPool;
 use Sulu\Bundle\AdminBundle\Admin\Navigation\NavigationItem;
 use Sulu\Bundle\AdminBundle\Admin\Navigation\NavigationItemCollection;
 use Sulu\Component\Security\Authorization\PermissionTypes;
@@ -21,22 +20,18 @@ use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 
 class NavigationAdmin extends Admin
 {
-    private AdminPool $adminPool;
-
+    /**
+     * @param iterable<Admin> $adminPools
+     */
     public function __construct(
         private readonly SecurityCheckerInterface $securityChecker,
+        private iterable $adminPools,
     ) {
-    }
-
-    // We have to have an indirection here, because otherwise there would be a circular dependency in the consturctor
-    public function setAdminPool(AdminPool $adminPool): void
-    {
-        $this->adminPool = $adminPool;
     }
 
     public function configureNavigationItems(NavigationItemCollection $navigationItemCollection): void
     {
-        foreach ($this->adminPool->getAdmins() as $admin) {
+        foreach ($this->adminPools as $admin) {
             $adminReflection = new \ReflectionClass($admin);
             foreach ($adminReflection->getAttributes(SuluNavigationItem::class) as $attributeReflection) {
                 $attribute = $attributeReflection->newInstance();

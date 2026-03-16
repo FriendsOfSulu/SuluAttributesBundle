@@ -6,6 +6,7 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle;
 
 use FriendsOfSulu\Bundle\SuluAttributesBundle\DependencyInjection\AdminAttributeCompilerPass;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\SuluOverrides\NavigationAdmin;
+use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Reference;
@@ -28,9 +29,9 @@ class SuluAttributesBundle extends AbstractBundle
         $services->set(NavigationAdmin::class)
             ->args([
                 new Reference('sulu_security.security_checker'),
+                new TaggedIteratorArgument('sulu.admin', defaultPriorityMethod: 'getPriority', excludeSelf: true),
             ])
             ->tag('sulu.admin')
-            ->call('setAdminPool', [new Reference('sulu_admin.admin_pool')])
         ;
     }
 }
