@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace FriendsOfSulu\Bundle\SuluAttributesBundle;
 
 use FriendsOfSulu\Bundle\SuluAttributesBundle\DependencyInjection\AdminAttributeCompilerPass;
+use FriendsOfSulu\Bundle\SuluAttributesBundle\DependencyInjection\SingleSelectionAttributeCompilerPass;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\SuluOverrides\NavigationAdmin;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -17,6 +18,7 @@ class SuluAttributesBundle extends AbstractBundle
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new AdminAttributeCompilerPass());
+        $container->addCompilerPass(new SingleSelectionAttributeCompilerPass());
     }
 
     /**
