@@ -85,25 +85,24 @@ for those overlays.
 ```php
 <?php
 
-#[\FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\SuluSingleSelection(
-    'single_account_selection',
-    [
-        'default_type' => 'auto_complete',
-        'resource_key' => 'accounts',
-        'types' => [
-            'auto_complete' => [
-                'display_property' => 'name',
-                'search_properties' => ['number', 'name'],
-            ],
-            'list_overlay' => [
-                'adapter' => 'table',
-                'list_key' => 'accounts',
-                'display_properties' => ['name'],
-                'empty_text' => 'sulu_contact.no_account_selected',
-                'icon' => 'su-house',
-                'overlay_title' => 'sulu_contact.single_account_selection_overlay_title',
-            ],
-        ],
+#[\FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\Selection\SuluSingleSelection(
+    name: 'single_account_selection',
+    defaultType: 'auto_complete',
+    resourceKey: 'accounts',
+    types: [
+        new \FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\Selection\AutoComplete(
+            displayProperty: 'name',
+            searchProperties: ['number', 'name']
+        ),
+        new \FriendsOfSulu\Bundle\SuluAttributesBundle\Attributes\Selection\ListOverlay(
+            adapter:  'table',
+            listKey: 'accounts',
+            detailOptions: [],
+            displayProperties: ['name'],
+            icon: 'su-house',
+            emptyText: 'sulu_contact.no_account_selected',
+            overlayTitle: 'sulu_contact.single_account_selection_overlay_title',
+        )
     ]
 )]
 class SingleContactSelectionPropertyResolver implements PropertyResolverInterface {}
