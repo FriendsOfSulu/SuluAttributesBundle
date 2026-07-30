@@ -11,6 +11,14 @@
   "autoload": {
     "psr-4": {
       "FriendsOfSulu\\Bundle\\SuluAttributesBundle\\": "./"
+    },
+    "exclude-from-classmap": [
+      "/Tests/"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FriendsOfSulu\\Bundle\\SuluAttributesBundle\\Tests\\": "Tests/"
     }
   },
   "authors": [
@@ -26,10 +34,12 @@
     "symfony/dependency-injection": "^4.4 || ^5.4 || ^6.3 || ^7.0",
     "symfony/framework-bundle": "^4.4 || ^5.4 || ^6.3 || ^7.0",
     "symfony/http-foundation": "^4.4 || ^5.4 || ^6.3 || ^7.0",
-    "symfony/http-kernel": "^4.4 || ^5.4 || ^6.3 || ^7.0"
+    "symfony/http-kernel": "^4.4 || ^5.4 || ^6.3 || ^7.0",
+    "symfony/var-exporter": "^4.4 || ^5.4 || ^6.3 || ^7.0"
   },
   "require-dev": {
     "jackalope/jackalope-doctrine-dbal": "^1.3.4 || ^2.0",
+    "phpspec/prophecy-phpunit": "^2.0",
     "phpunit/phpunit": "^10.5",
     "symfony/phpunit-bridge": "^5.4 || ^6.0 || ^7.0",
     "php-cs-fixer/shim": "^3.65",
@@ -41,6 +51,7 @@
     }
   },
   "scripts": {
+    "test": ["vendor/bin/phpunit"],
     "analyse": ["vendor/bin/phpstan", "vendor/bin/php-cs-fixer check"],
     "fix": ["vendor/bin/phpstan", "vendor/bin/php-cs-fixer fix"]
   }
