@@ -11,6 +11,6 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType;
 #[AsSection(title: ['de' => 'SEO', 'en' => 'SEO'], infoText: ['de' => 'Suchmaschinen'])]
 class SeoSection
 {
-    #[Property(type: FieldType::TEXT_LINE, title: ['de' => 'Meta Titel'])]
+    #[Property(type: FieldType::TextLine, title: ['de' => 'Meta Titel'])]
     public string $metaTitle;
 }

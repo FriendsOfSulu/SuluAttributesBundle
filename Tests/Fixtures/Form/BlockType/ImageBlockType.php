@@ -11,6 +11,6 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType;
 #[AsBlockType(name: 'image', title: ['de' => 'Bild', 'en' => 'Image'])]
 class ImageBlockType
 {
-    #[Property(type: FieldType::SINGLE_MEDIA_SELECTION, title: ['de' => 'Bild'], mandatory: true)]
+    #[Property(type: FieldType::SingleMediaSelection, title: ['de' => 'Bild'], mandatory: true)]
     public array $image;
 }

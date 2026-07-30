@@ -12,7 +12,7 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType;
 #[AsBlockType(name: 'outer', title: ['de' => 'Außen'])]
 class OuterBlockType
 {
-    #[Property(type: FieldType::TEXT_LINE, title: ['de' => 'Überschrift'])]
+    #[Property(type: FieldType::TextLine, title: ['de' => 'Überschrift'])]
     public string $heading;
 
     #[Block(types: [InnerBlockType::class], title: ['de' => 'Elemente'])]

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Form\Attribute;
 
+use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType;
+
 /**
  * Describes a single form property, the PHP equivalent of a `<property>`:
  *
@@ -23,7 +25,7 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Form\Attribute;
  *
  * ```php
  * #[Property(
- *     type: FieldType::TEXT_LINE,
+ *     type: FieldType::TextLine,
  *     title: ['de' => 'Titel'],
  *     mandatory: true,
  *     params: ['headline' => true],
@@ -35,7 +37,7 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Form\Attribute;
 final class Property
 {
     /**
-     * @param string $type Sulu field type; see {@see \FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType} for built-ins (any string works)
+     * @param string|FieldType $type Sulu field type; a {@see FieldType} case for built-ins or any string for custom content types
      * @param array<string, string> $title title per locale, e.g. ['de' => 'Titel', 'en' => 'Title']
      * @param array<string, string> $infoText info text per locale (description shown below the field)
      * @param bool $mandatory whether the field is required
@@ -52,7 +54,7 @@ final class Property
      * @param string|null $onInvalid behaviour on invalid value, e.g. "ignore"
      */
     public function __construct(
-        public string $type,
+        public string|FieldType $type,
         public array $title = [],
         public array $infoText = [],
         public bool $mandatory = false,

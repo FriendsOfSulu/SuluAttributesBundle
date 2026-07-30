@@ -11,6 +11,6 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType;
 #[AsForm]
 class SimpleForm
 {
-    #[Property(type: FieldType::TEXT_LINE, title: ['de' => 'Name'])]
+    #[Property(type: FieldType::TextLine, title: ['de' => 'Name'])]
     public string $name;
 }

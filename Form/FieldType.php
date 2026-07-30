@@ -4,62 +4,60 @@ declare(strict_types=1);
 
 namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Form;
 
+use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\Attribute\Property;
+
 /**
- * Convenience constants for Sulu's built-in field types.
+ * Sulu's built-in field types as a string-backed enum, for autocompletion and
+ * typo-safety.
  *
- * The property `type` is a free-form string — exactly as in XML — so ANY
- * registered content type works, including custom ones from your project or
- * third-party bundles. These constants exist purely for autocompletion and to
- * avoid typos for the most common types. Pass a plain string for anything not
- * listed here:
+ * The enum is not exhaustive by design: {@see Property::$type} accepts a plain
+ * string as well, so ANY registered content type works — custom ones from your
+ * project or third-party bundles included:
  *
  * ```php
- * #[Property(type: 'my_custom_content_type')]
+ * #[Property(type: FieldType::TextLine)]      // built-in, via the enum
+ * #[Property(type: 'my_custom_content_type')] // custom, via a plain string
  * ```
  */
-final class FieldType
+enum FieldType: string
 {
     // Text
-    public const TEXT_LINE = 'text_line';
-    public const TEXT_AREA = 'text_area';
-    public const TEXT_EDITOR = 'text_editor';
-    public const EMAIL = 'email';
-    public const URL = 'url';
-    public const PHONE = 'phone';
-    public const PASSWORD = 'password';
-    public const COLOR = 'color';
+    case TextLine = 'text_line';
+    case TextArea = 'text_area';
+    case TextEditor = 'text_editor';
+    case Email = 'email';
+    case Url = 'url';
+    case Phone = 'phone';
+    case Password = 'password';
+    case Color = 'color';
 
     // Numbers / dates
-    public const NUMBER = 'number';
-    public const PERCENT = 'percent';
-    public const DATE = 'date';
-    public const TIME = 'time';
-    public const DATE_TIME = 'datetime';
+    case Number = 'number';
+    case Percent = 'percent';
+    case Date = 'date';
+    case Time = 'time';
+    case DateTime = 'datetime';
 
     // Choices
-    public const CHECKBOX = 'checkbox';
-    public const TOGGLER = 'toggler';
-    public const SINGLE_SELECT = 'single_select';
-    public const SELECT = 'select';
+    case Checkbox = 'checkbox';
+    case Toggler = 'toggler';
+    case SingleSelect = 'single_select';
+    case Select = 'select';
 
     // Selections / relations
-    public const TAG_SELECTION = 'tag_selection';
-    public const CATEGORY_SELECTION = 'category_selection';
-    public const SINGLE_CATEGORY_SELECTION = 'single_category_selection';
-    public const MEDIA_SELECTION = 'media_selection';
-    public const SINGLE_MEDIA_SELECTION = 'single_media_selection';
-    public const PAGE_SELECTION = 'page_selection';
-    public const SINGLE_PAGE_SELECTION = 'single_page_selection';
-    public const SNIPPET_SELECTION = 'snippet_selection';
-    public const TEASER_SELECTION = 'teaser_selection';
-    public const CONTACT_SELECTION = 'contact_account_selection';
-    public const SMART_CONTENT = 'smart_content';
+    case TagSelection = 'tag_selection';
+    case CategorySelection = 'category_selection';
+    case SingleCategorySelection = 'single_category_selection';
+    case MediaSelection = 'media_selection';
+    case SingleMediaSelection = 'single_media_selection';
+    case PageSelection = 'page_selection';
+    case SinglePageSelection = 'single_page_selection';
+    case SnippetSelection = 'snippet_selection';
+    case TeaserSelection = 'teaser_selection';
+    case ContactSelection = 'contact_account_selection';
+    case SmartContent = 'smart_content';
 
     // Structure
-    public const RESOURCE_LOCATOR = 'resource_locator';
-    public const BLOCK = 'block';
-
-    private function __construct()
-    {
-    }
+    case ResourceLocator = 'resource_locator';
+    case Block = 'block';
 }

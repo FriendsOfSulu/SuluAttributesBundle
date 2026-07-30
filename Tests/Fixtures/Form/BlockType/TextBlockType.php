@@ -11,6 +11,6 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType;
 #[AsBlockType(title: ['de' => 'Text', 'en' => 'Text'])]
 class TextBlockType
 {
-    #[Property(type: FieldType::TEXT_EDITOR, title: ['de' => 'Text'], mandatory: true)]
+    #[Property(type: FieldType::TextEditor, title: ['de' => 'Text'], mandatory: true)]
     public string $text;
 }

@@ -94,7 +94,7 @@ class AttributeFormMetadataFactory
     private function buildField(string $propertyName, Property $attribute): FieldMetadata
     {
         $field = new FieldMetadata($attribute->name ?? $propertyName);
-        $field->setType($attribute->type);
+        $field->setType($attribute->type instanceof FieldType ? $attribute->type->value : $attribute->type);
         $field->setRequired($attribute->mandatory);
         $field->setMultilingual($attribute->multilingual);
         $field->setMinOccurs($attribute->minOccurs);
@@ -122,7 +122,7 @@ class AttributeFormMetadataFactory
     private function buildBlock(string $propertyName, Block $attribute): FieldMetadata
     {
         $block = new FieldMetadata($attribute->name ?? $propertyName);
-        $block->setType(FieldType::BLOCK);
+        $block->setType(FieldType::Block->value);
         $block->setRequired($attribute->mandatory);
         $block->setMultilingual($attribute->multilingual);
         $block->setMinOccurs($attribute->minOccurs);

@@ -8,9 +8,12 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\Attribute\AsForm;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\Attribute\Property;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType;
 
-#[AsForm(key: 'custom_key')]
-class CustomKeyForm
+#[AsForm]
+class CustomTypeForm
 {
-    #[Property(type: FieldType::TextLine, title: ['de' => 'Name'])]
-    public string $name;
+    #[Property(type: FieldType::TextLine)]
+    public string $builtin;
+
+    #[Property(type: 'my_custom_content_type')]
+    public string $custom;
 }

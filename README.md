@@ -171,7 +171,7 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType;
 class ExampleForm
 {
     #[Property(
-        type: FieldType::TEXT_LINE,
+        type: FieldType::TextLine,
         title: ['de' => 'Titel', 'en' => 'Title'],
         mandatory: true,
         params: ['headline' => true],
@@ -188,16 +188,23 @@ class ExampleForm
 #[AsBlockType(title: ['de' => 'Text (Eco)', 'en' => 'Text (eco)'])]
 class TextEcoType
 {
-    #[Property(type: FieldType::TEXT_AREA, title: ['de' => 'Zitat'], mandatory: true)]
+    #[Property(type: FieldType::TextArea, title: ['de' => 'Zitat'], mandatory: true)]
     public string $quote;
 }
 ```
 
 #### What is supported
 
-The `type` of a property is a free-form string (see `FieldType` for constants of the
-built-in types) — so every content type works, including your own. Beyond simple
-properties the following building blocks are available:
+The `type` of a property accepts a `FieldType` enum case for Sulu's built-in types
+(autocompletion, typo-safety) **or** a plain string — so every content type works,
+including custom ones from your project or third-party bundles:
+
+```php
+#[Property(type: FieldType::TextLine)]      // built-in, via the enum
+#[Property(type: 'my_custom_content_type')] // custom, via a plain string
+```
+
+Beyond simple properties the following building blocks are available:
 
 | Feature (XML)                                 | PHP                                                       |
 |-----------------------------------------------|----------------------------------------------------------|
@@ -221,7 +228,7 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\Attribute\Param;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\Attribute\ParamType;
 
 #[Property(
-    type: FieldType::SMART_CONTENT,
+    type: FieldType::SmartContent,
     params: [
         new Param('provider', 'pages'),
         new Param('sortBy', 'published', ParamType::Expression),

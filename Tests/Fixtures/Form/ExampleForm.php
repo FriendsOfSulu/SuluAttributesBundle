@@ -28,7 +28,7 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Tests\Fixtures\Form\Section\SeoSec
 class ExampleForm
 {
     #[Property(
-        type: FieldType::TEXT_LINE,
+        type: FieldType::TextLine,
         title: ['de' => 'Titel', 'en' => 'Title'],
         infoText: ['de' => 'Der Titel'],
         mandatory: true,
@@ -41,7 +41,7 @@ class ExampleForm
     public string $title;
 
     #[Property(
-        type: FieldType::SMART_CONTENT,
+        type: FieldType::SmartContent,
         params: [
             new Param('provider', 'pages'),
             new Param('sortBy', 'published', ParamType::Expression),

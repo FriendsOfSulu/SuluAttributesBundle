@@ -6,6 +6,7 @@ namespace FriendsOfSulu\Bundle\SuluAttributesBundle\Tests\Unit\Form;
 
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\AttributeFormMetadataFactory;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Tests\Fixtures\Form\CustomKeyForm;
+use FriendsOfSulu\Bundle\SuluAttributesBundle\Tests\Fixtures\Form\CustomTypeForm;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Tests\Fixtures\Form\ExampleForm;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Tests\Fixtures\Form\InvalidBlockForm;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Tests\Fixtures\Form\NestedBlockForm;
@@ -91,6 +92,22 @@ class AttributeFormMetadataFactoryTest extends TestCase
         $form = $this->factory->create(new ExampleForm());
 
         $this->assertSame($this->schema, $form->getSchema());
+    }
+
+    public function testFieldTypeEnumIsResolvedToItsStringValue(): void
+    {
+        $builtin = $this->factory->create(new CustomTypeForm())->getItems()['builtin'];
+        \assert($builtin instanceof FieldMetadata);
+
+        $this->assertSame('text_line', $builtin->getType());
+    }
+
+    public function testCustomStringTypeIsPassedThrough(): void
+    {
+        $custom = $this->factory->create(new CustomTypeForm())->getItems()['custom'];
+        \assert($custom instanceof FieldMetadata);
+
+        $this->assertSame('my_custom_content_type', $custom->getType());
     }
 
     public function testPropertyIsMapped(): void

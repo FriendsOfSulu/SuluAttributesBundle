@@ -11,6 +11,6 @@ use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\FieldType;
 #[AsBlockType(name: 'inner', title: ['de' => 'Innen'])]
 class InnerBlockType
 {
-    #[Property(type: FieldType::TEXT_LINE, title: ['de' => 'Beschriftung'])]
+    #[Property(type: FieldType::TextLine, title: ['de' => 'Beschriftung'])]
     public string $caption;
 }
