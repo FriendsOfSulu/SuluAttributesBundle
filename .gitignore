@@ -5,3 +5,8 @@ composer.lock
 
 ## php cs fixer
 /.php-cs-fixer.cache
+
+## phpunit
+/phpunit.xml
+/.phpunit.cache
+/.phpunit.result.cache
