@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace FriendsOfSulu\Bundle\SuluAttributesBundle;
 
+use FriendsOfSulu\Bundle\SuluAttributesBundle\AttributeListProvider\AttributeFieldDescriptorFactory;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\DependencyInjection\AdminAttributeCompilerPass;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\DependencyInjection\SingleSelectionAttributeCompilerPass;
 use FriendsOfSulu\Bundle\SuluAttributesBundle\Form\Attribute\AsForm;
@@ -79,5 +80,20 @@ class SuluAttributesBundle extends AbstractBundle
             ->tag('sulu_admin.form_metadata_loader', ['priority' => -128])
             ->tag('kernel.cache_warmer')
         ;
+
+        $services->set(AttributeFieldDescriptorFactory::class)
+            ->decorate('sulu_core.list_builder.field_descriptor_factory')
+            ->args([
+                new Reference(AttributeFieldDescriptorFactory::class.'.inner'),
+            ])
+        ;
+
+//services:
+  //friends_of_sulu.sulu_attributes.attribute_field_descriptor_factory:
+      //class: FriendsOfSulu\Bundle\SuluAttributesBundle\AttributeListProvider\AttributeFieldDescriptorFactory
+      //decorates: sulu_core.list_builder.field_descriptor_factory
+      //arguments:
+          //- '@friends_of_sulu.sulu_attributes.attribute_field_descriptor_factory.inner'
+
     }
 }
